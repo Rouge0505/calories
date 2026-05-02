@@ -251,7 +251,9 @@ def cmd_show_trend(args):
             elif row["category"] == "body":
                 for k, v in data.items():
                     if isinstance(v, (int, float)):
-                        body[k] = v
+                        # 同一天多条 body 记录时，取第一条（通常是晨起数据）
+                        if k not in body:
+                            body[k] = v
                         if k not in body_keys:
                             body_keys.append(k)
 
