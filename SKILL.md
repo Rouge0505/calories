@@ -213,7 +213,7 @@ python3 {SKILL_DIR}/calories.py delete-profile --key target_deficit
 
 ## 数据库
 
-SQLite 文件存放在 `{SKILL_DIR}/data.db`，自动创建，两张表：
+SQLite 文件存放在用户数据目录下（macOS `~/Library/Application Support/calories/data.db`，Linux `~/.local/share/calories/data.db`，Windows `%APPDATA%/calories/data.db`），自动创建，与 skill 代码目录分离（避免 skill 拷贝时覆盖数据）。两张表：
 
 - **entries**: 流水记录（饮食、运动、身体数据、里程碑、备注）。每天可以有多条，按时间排序。
 - **profile**: 持久性个人配置（KV 键值对）。key 是开放的，不限于固定字段。

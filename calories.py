@@ -24,7 +24,20 @@ import sqlite3
 import sys
 from datetime import date, datetime, timedelta
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.db")
+def _get_data_dir():
+    """跨平台用户数据目录：macOS ~/Library/Application Support, Linux ~/.local/share, Windows %APPDATA%"""
+    if sys.platform == "darwin":
+        base = os.path.join(os.path.expanduser("~"), "Library", "Application Support")
+    elif sys.platform == "win32":
+        base = os.environ.get("APPDATA", os.path.expanduser("~"))
+    else:
+        base = os.environ.get("XDG_DATA_HOME", os.path.join(os.path.expanduser("~"), ".local", "share"))
+    return os.path.join(base, "calories")
+
+
+DB_DIR = _get_data_dir()
+os.makedirs(DB_DIR, exist_ok=True)
+DB_PATH = os.path.join(DB_DIR, "data.db")
 
 
 def get_db():
