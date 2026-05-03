@@ -11,6 +11,7 @@ Calories Tracker CLI - 记录饮食、运动、身体状态、里程碑，查询
     python3 calories.py trend --from 2026-04-24 --to 2026-04-30
     python3 calories.py trend --days 7
     python3 calories.py delete --id 3
+    python3 calories.py update --id 3 --data '{...}'
     python3 calories.py set-profile --key goal --value "减脂为主，兼顾增肌"
     python3 calories.py get-profile
     python3 calories.py delete-profile --key target_deficit
@@ -329,6 +330,28 @@ def cmd_delete_entry(args):
     print(f"已删除 {row['date']} {_category_label(row['category'])} 记录 (id={args.id})")
 
 
+def cmd_update_entry(args):
+    """更新一条记录的 data_json，保留原 id/date/category/moment 不变。"""
+    conn = get_db()
+    row = conn.execute(
+        "SELECT id, date, category, moment, data_json FROM entries WHERE id=?",
+        (args.id,),
+    ).fetchone()
+    if not row:
+        print(f"未找到记录 (id={args.id})")
+        conn.close()
+        return
+
+    data = json.loads(args.data)
+    conn.execute(
+        "UPDATE entries SET data_json=? WHERE id=?",
+        (json.dumps(data, ensure_ascii=False), args.id),
+    )
+    conn.commit()
+    conn.close()
+    print(f"已更新 {row['date']} {_category_label(row['category'])} 记录 (id={args.id})")
+
+
 def cmd_set_profile(args):
     conn = get_db()
     conn.execute(
@@ -413,6 +436,11 @@ def main():
     p = sub.add_parser("delete", help="删除一条记录")
     p.add_argument("--id", required=True, type=int)
 
+    # update
+    p = sub.add_parser("update", help="更新一条记录的数据")
+    p.add_argument("--id", required=True, type=int)
+    p.add_argument("--data", required=True, help="新的 JSON 数据")
+
     # set-profile
     p = sub.add_parser("set-profile", help="设置个人档案")
     p.add_argument("--key", required=True)
@@ -436,6 +464,7 @@ def main():
         "summary": cmd_daily_summary,
         "trend": cmd_show_trend,
         "delete": cmd_delete_entry,
+        "update": cmd_update_entry,
         "set-profile": cmd_set_profile,
         "get-profile": cmd_get_profile,
         "delete-profile": cmd_delete_profile,

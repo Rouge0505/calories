@@ -168,7 +168,20 @@ python3 {SKILL_DIR}/calories.py delete --id 3
 
 ---
 
-### 5) 设置个人档案
+### 5) 更新记录
+
+```bash
+python3 {SKILL_DIR}/calories.py update --id 3 --data '{"items":[{"name":"鸡胸肉","qty":"250g","cal":412,"protein":62.5,"fat":9,"carbs":0}]}'
+```
+
+- `--id` (required): 记录 ID（从 summary 输出中获取）
+- `--data` (required): 新的完整 JSON 数据（替换原 data_json，date/category/moment 保持不变）
+
+用于修正数据内容（如食物重量、热量估算错误）。比 delete + log 更安全（原子操作，不会丢数据）。
+
+---
+
+### 6) 设置个人档案
 
 ```bash
 python3 {SKILL_DIR}/calories.py set-profile --key goal --value "减脂为主，目标体重58kg"
@@ -180,7 +193,7 @@ python3 {SKILL_DIR}/calories.py set-profile --key context --value "有力量训�
 
 ---
 
-### 6) 查看个人档案
+### 7) 查看个人档案
 
 ```bash
 python3 {SKILL_DIR}/calories.py get-profile
@@ -188,7 +201,7 @@ python3 {SKILL_DIR}/calories.py get-profile
 
 ---
 
-### 7) 删除档案字段
+### 8) 删除档案字段
 
 ```bash
 python3 {SKILL_DIR}/calories.py delete-profile --key target_deficit
@@ -227,7 +240,7 @@ SQLite 文件存放在 `{SKILL_DIR}/data.db`，自动创建，两张表：
   2. 找到需要修正的记录 ID
   3. **如果多条记录都匹配**用户的描述（如两条午餐都有燕麦），列出候选记录（含 id 和内容），让用户指定修改哪一条，**不要猜**
   4. 对比用户说的和数据库实际值——如果不一致（比如用户说"100g 错了"，但数据库是 80g），要先跟用户确认
-  5. 确认无误后 `delete --id X`，再 `log` 重新记录正确数据
+  5. 确认无误后使用 `update --id X --data '{...}'` 更新数据
 
 ## 使用建议
 

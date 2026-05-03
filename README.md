@@ -19,12 +19,14 @@ AI Agent Skill - 你的 AI 营养与健身教练。
 
 ## 使用方式
 
-本项目设计为 Qoder Skill，由 Agent 自动调用，用户无需直接操作命令行。
+本项目设计为 AI Agent Skill，由 Agent 自动调用，用户无需直接操作命令行。
 
 如需手动测试：
 
 ```bash
-python3 calories.py log --date 2026-05-02 --category food --data '{"items":"燕麦粥","kcal":350}'
+python3 calories.py log --date 2026-05-02 --category meal --moment 早餐 --data '{"items":[{"name":"燕麦粥","qty":"1碗","cal":350,"protein":12,"fat":6,"carbs":58}]}'
 python3 calories.py summary --date 2026-05-02
 python3 calories.py trend --days 7
+python3 calories.py update --id 1 --data '{"items":[{"name":"燕麦粥","qty":"1碗","cal":300,"protein":10,"fat":5,"carbs":50}]}'
+python3 calories.py delete --id 1
 ```
